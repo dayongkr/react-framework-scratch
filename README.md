@@ -10,3 +10,21 @@ It will support the following features:
 - [ ] Image optimization
 - [ ] Some of plugin system? (maybe)
 - [ ] ...
+
+## Usage
+
+### Install
+
+```bash
+pnpm install
+```
+
+You can also use `npm` to install the dependencies.
+
+### Run the SSR server
+
+```bash
+pnpm serve
+```
+
+It will automatically build the project and start the SSR server.
