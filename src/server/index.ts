@@ -1,18 +1,23 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { createRsbuild } from "@rsbuild/core";
-import { pluginReact } from "@rsbuild/plugin-react";
+import { rollup } from "rollup";
+import swcPlugin from "@rollup/plugin-swc";
 import { renderToString } from "react-dom/server";
-import { createElement } from "react";
 import { resolve } from "path";
+import { jsx } from "react/jsx-runtime";
+
+// For client-side rendering
+// import commonjsPlugin from "@rollup/plugin-commonjs";
+// import resolvePlugin from "@rollup/plugin-node-resolve";
 
 const buildDir = resolve(process.cwd(), "build");
+const appDir = resolve(process.cwd(), "src/app");
 
 const app = new Hono();
 
 app.get("/", async (c) => {
-  const page = await import(resolve(buildDir, "page.cjs"));
-  const html = renderToString(createElement(page.default));
+  const page = await import(resolve(buildDir, "page.js"));
+  const html = renderToString(jsx(page.default, {}));
   return c.html(html);
 });
 
@@ -22,25 +27,20 @@ serve(app, async (info) => {
 });
 
 async function build() {
-  const rsbuild = await createRsbuild({
-    rsbuildConfig: {
-      source: {
-        entry: {
-          page: "./src/app/page.tsx",
-        },
-      },
-      output: {
-        target: "node",
-        distPath: {
-          root: "build",
-        },
-        filename: {
-          js: "[name].cjs",
-        },
-      },
-      plugins: [pluginReact()],
-    },
+  const bundle = await rollup({
+    input: resolve(appDir, "page.tsx"),
+    plugins: [
+      // resolvePlugin({ extensions: [".js", ".jsx", ".ts", ".tsx"] }),
+      // commonjsPlugin(),
+      swcPlugin(),
+    ],
+    external: ["react", "react-dom"],
   });
 
-  await rsbuild.build();
+  await bundle.write({
+    format: "es",
+    dir: buildDir,
+    generatedCode: "es2015",
+    sourcemap: true,
+  });
 }
