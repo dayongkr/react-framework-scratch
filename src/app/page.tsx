@@ -1,9 +1,16 @@
-export default function Page() {
-  console.log("Page");
+import { Suspense } from "react";
 
+export default function Page() {
   return (
     <div>
-      <h1>Page</h1>
+      <Suspense fallback={<div>Loading...</div>}>
+        {/* @ts-expect-error */}
+        <Delay />
+      </Suspense>
     </div>
   );
+}
+
+async function Delay() {
+  return <div>Delay</div>;
 }

@@ -5,7 +5,7 @@ A simple React framework for understanding how to build a React framework from s
 It will support the following features:
 
 - [x] Server-side rendering
-- [ ] React Server Components
+- [x] React Server Components
 - [ ] File-based routing
 - [ ] Image optimization
 - [ ] Some of plugin system? (maybe)
