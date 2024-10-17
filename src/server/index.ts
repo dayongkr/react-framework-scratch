@@ -1,46 +1,22 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { rollup } from "rollup";
-import swcPlugin from "@rollup/plugin-swc";
 import { renderToString } from "react-dom/server";
 import { resolve } from "path";
 import { jsx } from "react/jsx-runtime";
+import { build } from "./libs/build";
 
-// For client-side rendering
-// import commonjsPlugin from "@rollup/plugin-commonjs";
-// import resolvePlugin from "@rollup/plugin-node-resolve";
-
-const buildDir = resolve(process.cwd(), "build");
+const buildDir = resolve(process.cwd(), "output");
 const appDir = resolve(process.cwd(), "src/app");
 
 const app = new Hono();
 
-app.get("/", async (c) => {
-  const page = await import(resolve(buildDir, "page.js"));
-  const html = renderToString(jsx(page.default, {}));
-  return c.html(html);
+app.get("/", async (context) => {
+  const { default: page } = await import(resolve(buildDir, "page.js"));
+  const html = renderToString(jsx(page, {}));
+  return context.html(html);
 });
 
 serve(app, async (info) => {
-  await build();
+  await build({ appDir, buildDir });
   console.log(`Server is running on http://localhost:${info.port}`);
 });
-
-async function build() {
-  const bundle = await rollup({
-    input: resolve(appDir, "page.tsx"),
-    plugins: [
-      // resolvePlugin({ extensions: [".js", ".jsx", ".ts", ".tsx"] }),
-      // commonjsPlugin(),
-      swcPlugin(),
-    ],
-    external: ["react", "react-dom"],
-  });
-
-  await bundle.write({
-    format: "es",
-    dir: buildDir,
-    generatedCode: "es2015",
-    sourcemap: true,
-  });
-}
