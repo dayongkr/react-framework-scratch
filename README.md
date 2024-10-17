@@ -28,3 +28,9 @@ pnpm serve
 ```
 
 It will automatically build the project and start the SSR server.
+
+## References
+
+- React Server Component
+  - [simple-rsc](https://github.com/bholmesdev/simple-rsc): A simple React Server Components implementation
+  - [waku](https://github.com/dai-shi/waku): ⛩️ The minimal React framework
