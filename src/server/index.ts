@@ -6,6 +6,7 @@ import { createElement } from "react";
 
 import ReactDOMServer from "react-server-dom-webpack/server.edge";
 import { serveStatic } from "@hono/node-server/serve-static";
+
 const buildDir = resolve(process.cwd(), "output");
 const appDir = resolve(process.cwd(), "src/app");
 
